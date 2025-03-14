@@ -13,7 +13,7 @@
 
     `docker compose up --build` or `docker-compose up --build`
 
-Cabinet - http://localhost:8000/
+App - http://localhost:8000/
 
 # Docker Services Overview
 
