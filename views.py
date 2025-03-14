@@ -13,6 +13,9 @@ class LoginView:
         self.auth_svc = AuthSvc()
 
     def signup(self, request: Request, user: UserCreate, db: Session = Depends(get_db)):
+        db_user = db.query(User).filter(User.email == user.email).first()
+        if db_user:
+            raise HTTPException(status_code=400, detail=f"User with email {user.email} already exists")
         hashed_password = self.auth_svc.hash_password(user.password)
         db_user = User(email=user.email, hashed_password=hashed_password)
         db.add(db_user)
