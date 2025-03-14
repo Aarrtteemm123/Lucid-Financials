@@ -2,14 +2,18 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from functools import lru_cache
 from starlette.requests import Request
-from helpers import hash_password, create_access_token, login_required
+from helpers import login_required
 from models import User, Post, get_db
 from schemas import UserCreate, PostCreate
+from services import AuthSvc
+
 
 class LoginView:
+    def __init__(self):
+        self.auth_svc = AuthSvc()
 
     def signup(self, request: Request, user: UserCreate, db: Session = Depends(get_db)):
-        hashed_password = hash_password(user.password)
+        hashed_password = self.auth_svc.hash_password(user.password)
         db_user = User(email=user.email, hashed_password=hashed_password)
         db.add(db_user)
         db.commit()
@@ -19,9 +23,9 @@ class LoginView:
 
     def login(self, request: Request, user: UserCreate, db: Session = Depends(get_db)):
         db_user = db.query(User).filter(User.email == user.email).first()
-        if not db_user or db_user.hashed_password != hash_password(user.password):
+        if not db_user or db_user.hashed_password != self.auth_svc.hash_password(user.password):
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        token = create_access_token({"sub": user.email})
+        token = self.auth_svc.create_access_token({"sub": user.email})
         return {"token": token}
 
 
