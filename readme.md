@@ -5,7 +5,7 @@
  
 # Installation guide (Dev)
 
-1. Clone file server repository
+1. Clone repository
 
     `git clone https://github.com/Aarrtteemm123/Lucid-Financials.git`
 
